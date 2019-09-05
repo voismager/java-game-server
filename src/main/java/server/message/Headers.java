@@ -1,11 +1,11 @@
 package server.message;
 
+import com.sun.istack.internal.NotNull;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.function.Supplier;
 
 public enum Headers implements Header {
@@ -40,6 +40,116 @@ public enum Headers implements Header {
 
     static {
         HEADERS = new ArrayList<>(Arrays.asList(values()));
+    }
+
+    public static Set<Header> setOf(Collection<Header> headers) {
+        return new HeaderSet(headers);
+    }
+
+    private static class HeaderSet implements Set<Header> {
+        private final Header[] values;
+        private final int size;
+
+        HeaderSet(Collection<Header> collection) {
+            int length = 0;
+            for (Header h : collection) {
+                if (h == null) throw new NullPointerException();
+                length = h.id() > length ? h.id() : length;
+            }
+            values = new Header[++length];
+            for (Header h : collection) {
+                values[h.id()] = h;
+            }
+            this.size = collection.size();
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return size == 0;
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            if (o instanceof Header) {
+                final int id = ((Header) o).id();
+                return values[id] != null;
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> collection) {
+            for (Object o : collection) {
+                if (!contains(o)) return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public Iterator<Header> iterator() {
+            return new Iterator<Header>() {
+                int i = 0;
+
+                @Override
+                public boolean hasNext() {
+                    Header h;
+                    do {
+                        h = values[i];
+                        if (i+1 == values.length) return false;
+                    } while (h == null);
+                    return true;
+                }
+
+                @Override
+                public Header next() {
+                    return values[i];
+                }
+            };
+        }
+
+        @Override
+        public Object[] toArray() {
+            Object[] a = new Object[size];
+
+            int i = 0;
+            for (final Iterator<Header> it = iterator(); it.hasNext(); ) {
+                a[i++] = it.next();
+            }
+
+            return a;
+        }
+
+        @Override
+        public <T> T[] toArray(@NotNull T[] ts) {
+            final T[] a = ts.length >= size ? ts : (T[]) Array.newInstance(ts.getClass().getComponentType(), size);
+
+            int i = 0;
+            for (final Iterator<Header> it = iterator(); it.hasNext(); ) {
+                a[i++] = (T) it.next();
+            }
+
+            return a;
+        }
+
+        @Override
+        public boolean add(Header header) { throw new UnsupportedOperationException(); }
+        @Override
+        public boolean remove(Object o) { throw new UnsupportedOperationException(); }
+        @Override
+        public boolean addAll(Collection<? extends Header> collection) { throw new UnsupportedOperationException(); }
+        @Override
+        public boolean retainAll(Collection<?> collection) { throw new UnsupportedOperationException(); }
+        @Override
+        public boolean removeAll(Collection<?> collection) { throw new UnsupportedOperationException(); }
+        @Override
+        public void clear() { throw new UnsupportedOperationException(); }
     }
 
     public static Message decode(ByteBuf buffer) {

@@ -14,7 +14,6 @@ import server.message.ChannelMessage;
 import server.message.Header;
 import server.message.Headers;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @ChannelHandler.Sharable
@@ -26,7 +25,7 @@ public class UnregisteredHandler extends ChannelInboundHandlerAdapter {
 
     public UnregisteredHandler(Session session) {
         this.session = session;
-        this.headers = new HashSet<>(session.unregisteredHeaders());
+        this.headers = Headers.setOf(session.unregisteredHeaders());
     }
 
     @Override
