@@ -2,6 +2,9 @@ package server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -21,14 +24,25 @@ public class TCPServer {
         if (channel != null && channel.isOpen()) throw new RuntimeException("Is already running");
 
         try {
-            this.boss = new NioEventLoopGroup(1);
-            this.worker = new NioEventLoopGroup(workerThreads);
+            ChannelFuture result;
 
-            ChannelFuture result = new ServerBootstrap()
-                    .group(boss, worker)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(initializer)
-                    .bind(address).sync();
+            if (Epoll.isAvailable()) {
+                this.boss = new EpollEventLoopGroup(1);
+                this.worker = new EpollEventLoopGroup(workerThreads);
+                result = new ServerBootstrap()
+                        .group(boss, worker)
+                        .channel(EpollServerSocketChannel.class)
+                        .childHandler(initializer)
+                        .bind(address).sync();
+            } else {
+                this.boss = new NioEventLoopGroup(1);
+                this.worker = new NioEventLoopGroup(workerThreads);
+                result = new ServerBootstrap()
+                        .group(boss, worker)
+                        .channel(NioServerSocketChannel.class)
+                        .childHandler(initializer)
+                        .bind(address).sync();
+            }
 
             if (result.isSuccess()) {
                 this.channel = result.channel();

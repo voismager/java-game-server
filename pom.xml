@@ -8,6 +8,10 @@
     <artifactId>java-server</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <netty.version>4.1.13.Final</netty.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -19,6 +23,14 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.5.0.Final</version>
+            </extension>
+        </extensions>
     </build>
 
     <dependencies>
@@ -37,7 +49,13 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.13.Final</version>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <version>${netty.version}</version>
+            <classifier>${os.detected.name}-${os.detected.arch}</classifier>
         </dependency>
         <dependency>
             <groupId>it.unimi.dsi</groupId>
