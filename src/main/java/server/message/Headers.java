@@ -95,16 +95,14 @@ public enum Headers implements Header {
         @Override
         public Iterator<Header> iterator() {
             return new Iterator<Header>() {
-                int i = 0;
+                int i = -1;
 
                 @Override
                 public boolean hasNext() {
-                    Header h;
-                    do {
-                        h = values[i];
-                        if (i+1 == values.length) return false;
-                    } while (h == null);
-                    return true;
+                    while (++i < values.length) {
+                        if (values[i] != null) return true;
+                    }
+                    return false;
                 }
 
                 @Override
