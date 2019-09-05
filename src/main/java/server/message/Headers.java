@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public enum Headers implements Header {
+    SESSION_DATA_REQUEST(SessionDataRequest::new),
     REGISTRATION_REQUEST(RegistrationRequest::new),
     CREATE_ROOM_REQUEST(new Supplier<Message>() {
         final CreateRoomRequest INSTANCE = new CreateRoomRequest();
@@ -23,6 +24,7 @@ public enum Headers implements Header {
         final PingMessage INSTANCE = new PingMessage();
         public Message get() { return INSTANCE; }
     }),
+    SESSION_DATA_RESPONSE(SessionDataResponse::new),
     REGISTRATION_SUCCEED_RESPONSE(RegistrationSucceedResponse::new),
     PLAYER_CONNECTED_RESPONSE(PlayerConnectedResponse::new),
     PLAYER_DISCONNECTED_RESPONSE(PlayerDisconnectedResponse::new),

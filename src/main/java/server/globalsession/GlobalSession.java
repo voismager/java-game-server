@@ -27,6 +27,7 @@ import server.messagesender.MessageSender;
 import server.messagesender.SessionSender;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -97,6 +98,11 @@ public class GlobalSession implements Session {
     @Override
     public String type() {
         return "Global Session";
+    }
+
+    @Override
+    public Collection<Header> unregisteredHeaders() {
+        return Arrays.asList(Headers.REGISTRATION_REQUEST, Headers.SESSION_DATA_REQUEST);
     }
 
     @Override

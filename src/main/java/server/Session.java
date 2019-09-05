@@ -1,5 +1,6 @@
 package server;
 
+import server.message.Header;
 import server.property.PropertyKey;
 import server.message.ChannelMessage;
 
@@ -9,6 +10,8 @@ import java.util.stream.Stream;
 
 public interface Session {
     String type();
+
+    Collection<Header> unregisteredHeaders();
 
     void start(InetSocketAddress address) throws InterruptedException;
 

@@ -18,7 +18,7 @@ public class Player {
         this.username = "Player #" + this.id;
 
         this.properties = new HashMap<>();
-        for (PropertyKey key : Properties.getAllByType(PropertyKey.ROOM_PROPERTY)) {
+        for (PropertyKey key : Properties.getAllByType(PropertyKey.PLAYER_PROPERTY)) {
             this.properties.put(key, key.defaultValue());
         }
     }
