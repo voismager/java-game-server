@@ -173,4 +173,24 @@ public final class BufferTools {
 
         return array;
     }
+
+    public static void writeStringList(List<String> value, ByteBuf buf) {
+        int length = value.size();
+
+        buf.writeInt(length);
+
+        for (int i = 0; i < length; i++)
+            writeString(value.get(i), buf);
+    }
+
+    public static List<String> readStringList(ByteBuf buf) {
+        int length = buf.readInt();
+
+        List<String> list = new ArrayList<>(length);
+
+        for (int i = 0; i < length; i++)
+            list.add(readString(buf));
+
+        return list;
+    }
 }
